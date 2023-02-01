@@ -2,7 +2,7 @@
 import ball_def as BALL
 import random
 import util
-import element_operation as eo
+import datetime
 import chess_operation as co
 
 
@@ -38,16 +38,29 @@ def setEmptyMargin(chess):
 
 
 rows = 80
+count = 10
 stru_symmetry = True
-chess = [[BALL.ELEMENT_INIT for i in range(11)] for i in range(rows)]
 
-# chess = co.mirrorX(setEmptyMargin(chess))
-# chess2img(chess, "chess1")
+for i in range(count):
+    print("create {}th/{}...".format(i, count))
+    chess = [[BALL.ELEMENT_INIT for i in range(11)] for i in range(rows)]
+    chess = setEmptyMargin(chess)
+    newchess = co.random_fill_basic_ball(chess)
+    newchess = co.random_fill_empty_ball(newchess)
+    # 如果出现了全空的行，需要填充
+    newchess = co.random_fill_empty_line(newchess)
 
-newchess = co.random_fill_basic_ball(chess)
-if stru_symmetry:
-    newchess = co.mirrorX(newchess)
+    # 镜像
+    if stru_symmetry:
+        newchess = co.mirrorX(newchess)
 
-util.chess2img(newchess, "chess2", "bubble.jpg")
+    # 移除单点
+    line_chess = util.array2oneline_list(newchess)
+    line_chess = co.remove_single_ball(line_chess)
+    newchess = util.oneline_list2array(line_chess)
 
-print(chess)
+    strtime = datetime.datetime.now().strftime("%Y%m%d_") + str(i) + ".jpg"
+    filename = "output//" + strtime
+    util.chess2img(newchess, "", filename)
+
+print("done")
